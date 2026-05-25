@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inngest Service Pulse</title>
+    <meta
+      name="description"
+      content="Service Pulse dashboard MVP to showcase Inngest workflow orchestration."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <header class="hero">
+        <p class="eyebrow">Inngest Showcase MVP</p>
+        <h1>Inngest Service Pulse</h1>
+        <p class="hero-copy">
+          Pulse multiple public services from one UI and model how Inngest would orchestrate checks,
+          retries, and incidents.
+        </p>
+      </header>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Global Controls</h2>
+          <p>Trigger all primary events from one action.</p>
+        </div>
+
+        <div class="controls">
+          <button id="pulse-all" class="button button-primary" type="button">⚡ Pulse All</button>
+          <button id="autopulse" class="button" type="button">Start Auto Pulse (5s)</button>
+          <span id="last-run" class="muted">Last run: never</span>
+        </div>
+        <p id="webhook-note" class="notice" aria-live="polite"></p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Primary Event Modules</h2>
+          <p>Three core events + optional webhook mode.</p>
+        </div>
+        <div id="service-grid" class="grid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Inngest Event Model</h2>
+          <p>Simple, production-like event flow for API and webhook checks.</p>
+        </div>
+        <ul class="feature-list">
+          <li><code>pulse/all.requested</code> starts the global check flow from the UI.</li>
+          <li><code>pulse/service.requested</code> runs one normalized check (API or webhook URL).</li>
+          <li><code>pulse/service.checked</code> stores status, latency, and failure metadata.</li>
+          <li><code>pulse/incident.changed</code> opens or resolves incidents after repeated failures.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Run Timeline (UI Simulation)</h2>
+          <p>Local preview of how investigation output can look.</p>
+        </div>
+        <div id="timeline" class="timeline"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
