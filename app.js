@@ -1,46 +1,4 @@
-const services = [
-  {
-    key: "webhook",
-    serviceId: 5,
-    eventLabel: "WEBHOOK_URL",
-    name: "Webhook URL",
-    endpoint: "",
-    defaultEnabled: false,
-    isWebhook: true,
-  },
-  {
-    key: "github-api",
-    serviceId: 1,
-    eventLabel: "GITHUB_API",
-    name: "GitHub API",
-    endpoint: "https://api.github.com/rate_limit",
-    defaultEnabled: true,
-  },
-  {
-    key: "github-status",
-    serviceId: 2,
-    eventLabel: "GITHUB_STATUS",
-    name: "GitHub Status",
-    endpoint: "https://www.githubstatus.com/api/v2/status.json",
-    defaultEnabled: true,
-  },
-  {
-    key: "npm-ping",
-    serviceId: 3,
-    eventLabel: "NPM_PIN",
-    name: "NPM PIN",
-    endpoint: "https://registry.npmjs.org/-/ping",
-    defaultEnabled: true,
-  },
-  {
-    key: "jsonplaceholder",
-    serviceId: 4,
-    eventLabel: "JSON_PLASTHORDEN",
-    name: "JSON Plasthorden",
-    endpoint: "https://jsonplaceholder.typicode.com/posts/1",
-    defaultEnabled: true,
-  },
-];
+const services = [];
 
 const grid = document.querySelector("#service-grid");
 const timeline = document.querySelector("#timeline");
@@ -52,15 +10,27 @@ const webhookNote = document.querySelector("#webhook-note");
 const state = new Map();
 let autoPulseId = null;
 
-function randomLatency() {
-  return Math.floor(Math.random() * 900) + 70;
+async function apiJson(url, options = {}) {
+  const response = await fetch(url, {
+    headers: { "Content-Type": "application/json" },
+    ...options,
+  });
+  if (!response.ok) {
+    throw new Error(`${options.method || "GET"} ${url} -> ${response.status}`);
+  }
+  return response.json();
 }
 
-function nextStatus() {
-  const n = Math.random();
-  if (n < 0.75) return "healthy";
-  if (n < 0.92) return "degraded";
-  return "down";
+async function loadServices() {
+  const payload = await apiJson("./api/pulse/services");
+  services.length = 0;
+  for (const service of payload.services || []) {
+    services.push({
+      ...service,
+      eventLabel: service.label,
+      isWebhook: Boolean(service.isWebhook) || service.key === "webhook",
+    });
+  }
 }
 
 function statusLabel(status) {
@@ -77,9 +47,9 @@ function appendTimeline(text, key = "webhook") {
   const entry = document.createElement("div");
   entry.className = `entry entry-${key}`;
   entry.textContent = text;
-  timeline.prepend(entry);
+  timeline.append(entry);
   while (timeline.children.length > 10) {
-    timeline.removeChild(timeline.lastChild);
+    timeline.removeChild(timeline.firstChild);
   }
 }
 
@@ -99,7 +69,7 @@ function renderCards() {
   services.forEach((service) => {
     const serviceState = state.get(service.key);
     const card = document.createElement("article");
-    card.className = "card";
+    card.className = service.isWebhook ? "card webhook-card" : "card";
 
     const heading = document.createElement("h3");
     heading.textContent = service.name;
@@ -117,14 +87,26 @@ function renderCards() {
               ? "event-e3"
               : "event-e4";
     eventBadge.className = `event-id ${eventClass}`;
-    eventBadge.textContent = `#${service.serviceId}  ${service.eventLabel}`;
+    eventBadge.textContent = service.isWebhook
+      ? "WEBHOOK_URL"
+      : `#${service.serviceId}  ${service.eventLabel}`;
     card.appendChild(eventBadge);
 
     const endpoint = document.createElement("p");
     endpoint.textContent = service.isWebhook
       ? "Optional branch. Used only if enabled and URL is provided."
-      : service.endpoint;
+      : `Endpoint: ${service.endpoint}`;
+    endpoint.className = "endpoint-url";
     card.appendChild(endpoint);
+
+    if (service.isWebhook) {
+      const configured = document.createElement("p");
+      configured.className = "endpoint-url";
+      configured.textContent = serviceState.endpoint
+        ? `Configured URL: ${serviceState.endpoint}`
+        : "Configured URL: (empty)";
+      card.appendChild(configured);
+    }
 
     const statusRow = document.createElement("div");
     statusRow.className = "status-row";
@@ -153,6 +135,7 @@ function renderCards() {
       const checkbox = label.querySelector("input");
       checkbox.addEventListener("change", () => {
         serviceState.enabled = checkbox.checked;
+        service.enabled = checkbox.checked;
         appendTimeline(
           `[${nowLabel()}] [${service.eventLabel}] ${serviceState.enabled ? "ENABLED" : "DISABLED"} IN PULSE_ALL`,
           service.key
@@ -167,6 +150,7 @@ function renderCards() {
       input.value = serviceState.endpoint;
       input.addEventListener("change", () => {
         serviceState.endpoint = input.value.trim();
+        service.endpoint = serviceState.endpoint;
         appendTimeline(
           `[${nowLabel()}] [${service.eventLabel}] URL UPDATED`,
           service.key
@@ -183,45 +167,79 @@ function renderCards() {
   });
 }
 
-function runPulse(service) {
-  const serviceState = state.get(service.key);
-  const status = nextStatus();
-  const latency = randomLatency();
-
-  serviceState.status = status;
-  serviceState.latencyMs = latency;
-  serviceState.lastCheck = nowLabel();
-  serviceState.failures = status === "healthy" ? 0 : serviceState.failures + 1;
-
-  appendTimeline(
-    `[${serviceState.lastCheck}] [#${service.serviceId}] [${service.eventLabel}] ${status.toUpperCase()} ${latency}MS`,
-    service.key
-  );
+function applyResult(result) {
+  const serviceState = state.get(result.key);
+  if (!serviceState) return;
+  serviceState.status = result.status;
+  serviceState.latencyMs = result.latencyMs;
+  serviceState.lastCheck = new Date(result.checkedAt).toLocaleTimeString();
+  serviceState.failures = result.status === "healthy" ? 0 : serviceState.failures + 1;
 }
 
-function pulseAll() {
+async function refreshResults() {
+  const payload = await apiJson("./api/pulse/results");
+  const results = payload.results || [];
+
+  results.forEach((result) => applyResult(result));
+  renderCards();
+
+  timeline.innerHTML = "";
+  results
+    .slice(0, 10)
+    .reverse()
+    .forEach((result) => {
+      const checkedAt = new Date(result.checkedAt).toLocaleTimeString();
+      appendTimeline(
+        result.key === "webhook"
+          ? `[${checkedAt}] [WEBHOOK_URL] ${result.status.toUpperCase()} ${result.latencyMs}MS`
+          : `[${checkedAt}] [#${result.serviceId}] [${result.label}] ${result.status.toUpperCase()} ${result.latencyMs}MS`,
+        result.key
+      );
+    });
+}
+
+async function pulseAll() {
   setWebhookNote();
 
-  services.forEach((service) => {
+  const payloadServices = services.map((service) => {
     const serviceState = state.get(service.key);
-    if (service.isWebhook) {
-      if (!serviceState.enabled || !serviceState.endpoint) {
-        if (service.isWebhook) {
-          setWebhookNote(
-            "WEBHOOK_URL is enabled but missing URL. Add webhook URL to include it in Pulse All."
-          );
-        }
-        appendTimeline(
-          `[${nowLabel()}] [${service.eventLabel}] SKIPPED (DISABLED OR URL MISSING)`,
-          service.key
-        );
-        return;
-      }
+    if (service.isWebhook && serviceState.enabled && !serviceState.endpoint) {
+      setWebhookNote(
+        "WEBHOOK_URL is enabled but missing URL. Add webhook URL to include it in Pulse All."
+      );
+      appendTimeline(
+        `[${nowLabel()}] [${service.eventLabel}] SKIPPED (ENABLED WITHOUT URL)`,
+        service.key
+      );
     }
-    runPulse(service);
+    return {
+      ...service,
+      enabled: serviceState.enabled,
+      endpoint: serviceState.endpoint,
+      label: service.eventLabel,
+    };
   });
-  lastRun.textContent = `Last run: ${nowLabel()}`;
-  renderCards();
+
+  try {
+    const queued = await apiJson("./api/pulse/all", {
+      method: "POST",
+      body: JSON.stringify({ services: payloadServices }),
+    });
+    appendTimeline(`[${nowLabel()}] [SYSTEM] PULSE_ALL QUEUED ${queued.queued}`, "webhook");
+    lastRun.textContent = `Last run: ${nowLabel()}`;
+
+    setTimeout(() => {
+      refreshResults().catch((error) => {
+        appendTimeline(`[${nowLabel()}] [SYSTEM] REFRESH FAILED: ${error.message}`, "webhook");
+      });
+    }, 1500);
+  } catch (error) {
+    appendTimeline(
+      `[${nowLabel()}] [SYSTEM] PULSE_ALL FAILED: ${error instanceof Error ? error.message : "UNKNOWN"}`,
+      "webhook"
+    );
+    return;
+  }
 }
 
 function toggleAutoPulse() {
@@ -232,26 +250,47 @@ function toggleAutoPulse() {
     appendTimeline(`[${nowLabel()}] [SYSTEM] AUTO_PULSE STOPPED`, "webhook");
     return;
   }
-  autoPulseId = setInterval(pulseAll, 5000);
+  autoPulseId = setInterval(() => {
+    pulseAll().catch((error) => {
+      appendTimeline(`[${nowLabel()}] [SYSTEM] AUTO_PULSE ERROR: ${error.message}`, "webhook");
+    });
+  }, 5000);
   autoPulseButton.textContent = "Stop Auto Pulse";
   appendTimeline(`[${nowLabel()}] [SYSTEM] AUTO_PULSE STARTED (5S)`, "webhook");
 }
 
-function init() {
+async function init() {
+  try {
+    await loadServices();
+  } catch (error) {
+    appendTimeline(
+      `[${nowLabel()}] [SYSTEM] SERVICE LOAD FAILED: ${error instanceof Error ? error.message : "UNKNOWN"}`,
+      "webhook"
+    );
+    return;
+  }
+
   services.forEach((service) => {
     state.set(service.key, {
       status: "degraded",
       latencyMs: 0,
       failures: 0,
       lastCheck: "",
-      enabled: service.defaultEnabled,
-      endpoint: service.endpoint,
+      enabled: Boolean(service.enabled),
+      endpoint: service.endpoint || "",
     });
   });
   renderCards();
-  pulseAllButton.addEventListener("click", pulseAll);
+  pulseAllButton.addEventListener("click", () => {
+    pulseAll().catch((error) => {
+      appendTimeline(`[${nowLabel()}] [SYSTEM] CLICK ERROR: ${error.message}`, "webhook");
+    });
+  });
   autoPulseButton.addEventListener("click", toggleAutoPulse);
   appendTimeline(`[${nowLabel()}] [SYSTEM] DASHBOARD INITIALIZED`, "webhook");
+  await refreshResults();
 }
 
-init();
+init().catch((error) => {
+  appendTimeline(`[${nowLabel()}] [SYSTEM] INIT FAILED: ${error.message}`, "webhook");
+});

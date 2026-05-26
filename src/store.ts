@@ -3,7 +3,7 @@ import { PulseResult, ServiceConfig } from "./types.js";
 export const serviceDefaults: ServiceConfig[] = [
   {
     key: "webhook",
-    serviceId: 5,
+    serviceId: 0,
     label: "WEBHOOK_URL",
     name: "Webhook URL",
     type: "webhook_url",
@@ -40,8 +40,8 @@ export const serviceDefaults: ServiceConfig[] = [
   {
     key: "jsonplaceholder",
     serviceId: 4,
-    label: "JSON_PLASTHORDEN",
-    name: "JSON Plasthorden",
+    label: "JSON_PLACE_HOLDER",
+    name: "JSON place holder",
     type: "api",
     endpoint: "https://jsonplaceholder.typicode.com/posts/1",
     enabled: true,

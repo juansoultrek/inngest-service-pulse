@@ -30,7 +30,7 @@ body {
 }
 
 .layout {
-  max-width: 1080px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 46px 20px 64px;
 }
@@ -126,6 +126,10 @@ body {
   padding: 12px;
 }
 
+.card.webhook-card {
+  grid-column: 1 / -1;
+}
+
 .card h3 {
   margin: 0 0 8px;
 }
@@ -173,6 +177,11 @@ body {
 .card p {
   margin: 0;
   color: var(--muted);
+}
+
+.endpoint-url {
+  margin-top: 4px;
+  word-break: break-all;
 }
 
 .status-row {
