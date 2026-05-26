@@ -27,33 +27,33 @@ Open:
 - Add persistent storage for pulse history and incidents.
 - Add signed webhook validation for user-provided endpoints.
 
-## Namecheap + CI deployment
+## cPanel + CI deployment
 
-This project deploys with GitHub Actions over SSH using the same secret names as your other projects.
+This project deploys with GitHub Actions over SSH.
 
 ### Deploy target folder
 
-Use the app under:
+Use the app under a subpath such as:
 
 - `/inngest`
 
 Recommended remote app dir:
 
-- `public_html/juansoultrek.com/inngest`
+- `public_html/<your-domain>/inngest`
 
-### GitHub Secrets (same names as existing projects)
+### GitHub Secrets
 
 - `DEPLOY_SSH_HOST`
 - `DEPLOY_SSH_USERNAME`
 - `DEPLOY_SSH_PRIVATE_KEY`
 - `DEPLOY_SSH_PORT`
-- `DEPLOY_REMOTE_APP_DIR` (set to `public_html/juansoultrek.com/inngest`)
+- `DEPLOY_REMOTE_APP_DIR` (example: `public_html/<your-domain>/inngest`)
 
 ### Node app settings (cPanel)
 
 - **Node version:** `20.x`
-- **Application root:** `/home/badgroovy/public_html/juansoultrek.com/inngest`
-- **Application URL:** `juansoultrek.com/inngest`
+- **Application root:** `/home/<cpanel-user>/public_html/<your-domain>/inngest`
+- **Application URL:** `<your-domain>/inngest`
 - **Startup file:** `dist/server.js`
 - **Restart trigger:** `tmp/restart.txt` (handled by CI)
 - **CloudLinux note:** keep `node_modules` as Node Selector symlink (CI does not upload it).
@@ -66,6 +66,6 @@ Recommended remote app dir:
 
 ### Verify after deploy
 
-- `https://juansoultrek.com/inngest/`
-- `https://juansoultrek.com/inngest/health`
-- `https://juansoultrek.com/inngest/api/inngest`
+- `https://<your-domain>/inngest/`
+- `https://<your-domain>/inngest/health`
+- `https://<your-domain>/inngest/api/inngest`

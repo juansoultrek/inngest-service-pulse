@@ -70,6 +70,5 @@ jobs:
             rm -rf dist
             tar -xzf deploy-bundle.tar.gz
             rm -f deploy-bundle.tar.gz
-            npm install --omit=dev --no-audit --no-fund
             mkdir -p tmp
             touch tmp/restart.txt
