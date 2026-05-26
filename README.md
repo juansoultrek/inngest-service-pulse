@@ -56,6 +56,7 @@ Recommended remote app dir:
 - **Application URL:** `juansoultrek.com/inngest`
 - **Startup file:** `dist/server.js`
 - **Restart trigger:** `tmp/restart.txt` (handled by CI)
+- **CloudLinux note:** keep `node_modules` as Node Selector symlink (CI does not upload it).
 
 ### App environment variables
 

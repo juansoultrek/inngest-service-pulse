@@ -38,11 +38,8 @@ jobs:
       - name: Install and build
         run: npm ci --no-audit --no-fund && npm run build
 
-      - name: Production node_modules
-        run: rm -rf node_modules && npm ci --omit=dev --no-audit --no-fund
-
       - name: Pack deploy bundle
-        run: tar -czf deploy-bundle.tar.gz dist index.html styles.css app.js package.json package-lock.json node_modules
+        run: tar -czf deploy-bundle.tar.gz dist index.html styles.css app.js package.json package-lock.json
 
       - name: Upload bundle via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -70,8 +67,9 @@ jobs:
           script: |
             set -euo pipefail
             cd "${REMOTE_DIR}"
-            rm -rf dist node_modules
+            rm -rf dist
             tar -xzf deploy-bundle.tar.gz
             rm -f deploy-bundle.tar.gz
+            npm install --omit=dev --no-audit --no-fund
             mkdir -p tmp
             touch tmp/restart.txt
