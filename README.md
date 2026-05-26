@@ -62,6 +62,7 @@ Recommended remote app dir:
 
 - `INNGEST_EVENT_KEY`
 - `INNGEST_SIGNING_KEY`
+- `BASE_PATH` (set `/inngest` for subpath deployments)
 - `PORT` (optional; cPanel/Passenger usually injects it)
 
 ### Verify after deploy

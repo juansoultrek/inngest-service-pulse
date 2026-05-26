@@ -13,23 +13,33 @@ const rootDir = path.resolve(__dirname, "..");
 
 const app = express();
 const port = Number(process.env.PORT ?? 8090);
+const basePathRaw = process.env.BASE_PATH ?? "/inngest";
+const basePath =
+  basePathRaw === "/" ? "" : `/${basePathRaw.replace(/^\/+|\/+$/g, "")}`;
 
 app.use(express.json());
 app.use(express.static(rootDir));
 
-app.get("/health", (_req, res) => {
-  res.json({ ok: true, service: "inngest-service-pulse", ts: new Date().toISOString() });
+const router = express.Router();
+
+router.get("/health", (_req, res) => {
+  res.json({
+    ok: true,
+    service: "inngest-service-pulse",
+    basePath: basePath || "/",
+    ts: new Date().toISOString(),
+  });
 });
 
-app.get("/api/pulse/services", (_req, res) => {
+router.get("/api/pulse/services", (_req, res) => {
   res.json({ services: serviceDefaults });
 });
 
-app.get("/api/pulse/results", (_req, res) => {
+router.get("/api/pulse/results", (_req, res) => {
   res.json({ results: listResults() });
 });
 
-app.post("/api/pulse/all", async (req, res) => {
+router.post("/api/pulse/all", async (req, res) => {
   const provided = req.body?.services as ServiceConfig[] | undefined;
   const services = (provided?.length ? provided : serviceDefaults)
     .filter((service) => service.enabled)
@@ -43,7 +53,7 @@ app.post("/api/pulse/all", async (req, res) => {
   res.json({ ok: true, queued: services.length });
 });
 
-app.use(
+router.use(
   "/api/inngest",
   serve({
     client: inngest,
@@ -51,11 +61,20 @@ app.use(
   })
 );
 
-app.get("/", (_req, res) => {
+router.get("/", (_req, res) => {
   res.sendFile(path.resolve(rootDir, "index.html"));
 });
 
+if (basePath) {
+  app.use(basePath, router);
+}
+
+// Root mount for local dev and environments without a path prefix.
+app.use("/", router);
+
 app.listen(port, () => {
-  console.log(`Inngest Service Pulse running on http://localhost:${port}`);
+  console.log(
+    `Inngest Service Pulse running on http://localhost:${port}${basePath || "/"}`
+  );
 });
 
