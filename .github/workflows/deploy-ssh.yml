@@ -66,9 +66,14 @@ jobs:
           debug: false
           script: |
             set -euo pipefail
+            echo "Deploy target: ${REMOTE_DIR}"
             cd "${REMOTE_DIR}"
             rm -rf dist
             tar -xzf deploy-bundle.tar.gz
             rm -f deploy-bundle.tar.gz
             mkdir -p tmp
             touch tmp/restart.txt
+            echo "Deployed files:"
+            ls -la
+            echo "Key file timestamps:"
+            ls -la index.html app.js styles.css dist/server.js
