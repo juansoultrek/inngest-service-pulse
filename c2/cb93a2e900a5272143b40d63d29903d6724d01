@@ -1,0 +1,49 @@
+src/store.ts
+  s_2bddd97db3a396::t_3fcd6f0532e1e3 21,31,34,36-37,39,41,44,46-47,49,51-81
+index.html
+  s_2bddd97db3a396::t_f7ade1a997f703 48-49
+  s_2bddd97db3a396::t_254fee71ecb503 41
+src/pulseCheck.ts
+  s_2bddd97db3a396::t_24bf4078c575fc 1-114,116,119-166,177-178
+  s_2bddd97db3a396::t_0d47bc1d4bc274 115,117-118
+  s_2bddd97db3a396::t_069cbfb0a08d64 167-169,174-176
+src/types.ts
+  s_2bddd97db3a396::t_9687fc966bc571 5-9,13-20,30
+styles.css
+  s_2bddd97db3a396::t_6d562c5bcd1dcc 279-283
+src/server.ts
+  s_5e035641087fd6::t_27a70213cacba6 79,93-100
+  s_5e035641087fd6::t_ee9afa8b9d5e3b 2,8,10,21,26
+  s_2bddd97db3a396::t_77f6269558ea56 47-49
+  s_5e035641087fd6::t_4a45049659618e 76-78
+  s_5e035641087fd6::t_965f86f7530b9b 80-81
+app.js
+  s_2bddd97db3a396::t_c7af57104ae131 79-89
+  s_2bddd97db3a396::t_dcf5ecd69f019b 180-197,200,223-226
+  s_2bddd97db3a396::t_992424dd4d6593 297
+  s_2bddd97db3a396::t_63a7217d4497ae 227
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c2cb93a2e900a5272143b40d63d29903d6724d01",
+  "prompts": {},
+  "sessions": {
+    "s_2bddd97db3a396": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "a0934af5-d428-40fe-b96c-69ea1c5c5d34",
+        "model": "grok-4.5"
+      },
+      "human_author": "Juan <juan.villegas@formstack.com>"
+    },
+    "s_5e035641087fd6": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "6942e861-f911-495d-b0b6-5b51e587a68f",
+        "model": "grok-4.5"
+      },
+      "human_author": "Juan <juan.villegas@formstack.com>"
+    }
+  }
+}
