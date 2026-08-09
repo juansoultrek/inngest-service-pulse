@@ -5,7 +5,7 @@
   --text: #f4f7ff;
   --muted: #9fb0d9;
   --border: #2a3a66;
-  --accent: #60a5fa;
+  --accent: #eab308;
   --good: #22c55e;
   --warn: #f59e0b;
   --bad: #ef4444;
@@ -144,34 +144,47 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-.event-e1 {
-  border-color: rgba(96, 165, 250, 0.4);
-  color: #b9d8ff;
+/* Match juansoultrek.com playground company tag colors */
+.event-github {
+  border-color: rgba(148, 163, 184, 0.4);
+  color: #e2e8f0;
+  background: rgba(148, 163, 184, 0.14);
 }
 
-.event-e2 {
-  border-color: rgba(52, 211, 153, 0.4);
-  color: #b8f5de;
+.event-tavus {
+  border-color: rgba(6, 182, 212, 0.45);
+  color: #a5f3fc;
+  background: rgba(6, 182, 212, 0.16);
 }
 
-.event-e3 {
-  border-color: rgba(244, 114, 182, 0.4);
-  color: #ffd0eb;
+.event-nango {
+  border-color: rgba(139, 92, 246, 0.45);
+  color: #ddd6fe;
+  background: rgba(139, 92, 246, 0.18);
 }
 
-.event-e4 {
-  border-color: rgba(250, 204, 21, 0.45);
-  color: #fff1a5;
+.event-resend {
+  border-color: rgba(99, 102, 241, 0.45);
+  color: #c7d2fe;
+  background: rgba(99, 102, 241, 0.18);
 }
 
-.event-e5 {
-  border-color: rgba(167, 139, 250, 0.45);
-  color: #ded1ff;
+.event-posthog {
+  border-color: rgba(249, 115, 22, 0.45);
+  color: #fed7aa;
+  background: rgba(249, 115, 22, 0.16);
+}
+
+.event-supabase {
+  border-color: rgba(62, 207, 142, 0.4);
+  color: #bbf7d0;
+  background: rgba(62, 207, 142, 0.16);
 }
 
 .event-webhook {
-  border-color: rgba(245, 158, 11, 0.45);
-  color: #ffe0a5;
+  border-color: rgba(234, 179, 8, 0.45);
+  color: #fef08a;
+  background: rgba(234, 179, 8, 0.16);
 }
 
 .card p {
@@ -256,37 +269,34 @@ body {
   font-size: 0.85rem;
 }
 
-.entry-e1 {
-  border-left-color: #60a5fa;
+.entry-github-api,
+.entry-github-status {
+  border-left-color: #94a3b8;
 }
 
-.entry-e2 {
-  border-left-color: #34d399;
+.entry-tavus-status {
+  border-left-color: #06b6d4;
 }
 
-.entry-e3 {
-  border-left-color: #f472b6;
+.entry-nango-status {
+  border-left-color: #8b5cf6;
 }
 
-.entry-e4 {
-  border-left-color: #facc15;
+.entry-resend-status {
+  border-left-color: #6366f1;
 }
 
-.entry-e5 {
-  border-left-color: #a78bfa;
+.entry-posthog-status {
+  border-left-color: #f97316;
 }
 
-.entry-tavus-status,
-.entry-nango-status,
-.entry-resend-status,
-.entry-posthog-status,
-.entry-supabase-status,
+.entry-supabase-status {
+  border-left-color: #3ecf8e;
+}
+
+.entry-webhook,
 .entry-custom-url {
-  border-left-color: #f472b6;
-}
-
-.entry-webhook {
-  border-left-color: #f59e0b;
+  border-left-color: #eab308;
 }
 
 .muted {

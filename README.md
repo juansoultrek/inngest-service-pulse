@@ -1,72 +1,129 @@
 # Inngest Service Pulse
 
-Service reliability dashboard powered by event-driven pulse workflows.
+A small Express + Inngest dashboard that pulses your stack’s **public status pages** (and an optional webhook URL) from one UI. Useful as a reliability / Inngest showcase: check latency + operational state, queue events, and skim a short run timeline.
 
-## What this MVP includes
+No product API keys required for the default service list.
 
-- TypeScript backend with Express + Inngest SDK.
-- Public-service pulse dashboard (no credentials required).
-- Global `Pulse All` action with optional webhook URL checks.
-- Inngest endpoints for event triggers and function execution.
+---
 
-## Run locally
+## Prerequisites
+
+- **Node.js 20+**
+- **npm** (this repo has a `package-lock.json`; prefer **`npm ci`**)
+
+---
+
+## Run on localhost (follow in order)
+
+### 1. Install dependencies
+
+At the repository root (directory that contains **`package.json`**):
 
 ```bash
-npm install
+npm ci
+```
+
+### 2. Create `.env` (optional)
+
+```bash
+cp .env.example .env
+```
+
+Defaults work without Inngest Cloud keys. The UI pulse still runs; event emission to Inngest is best-effort.
+
+### 3. Start the development server
+
+```bash
 npm run dev
 ```
 
-Open:
+### 4. Open the app
 
-- `http://localhost:8090`
-- `http://localhost:8090/health`
+Default URL:
 
-## Next phase
+**`http://localhost:8090`**
 
-- Connect UI controls to `/api/pulse/all` and live `/api/pulse/results`.
-- Add persistent storage for pulse history and incidents.
-- Add signed webhook validation for user-provided endpoints.
+Also mounted under **`http://localhost:8090/inngest`** when `BASE_PATH=/inngest` (the default).
 
-## cPanel + CI deployment
+### 5. Try the UI
 
-This project deploys with GitHub Actions over SSH.
+1. Click **Pulse All** (or start **Auto Pulse**).
+2. Watch the service cards and the run timeline update.
+3. Optionally enable **Webhook URL**, paste an HTTPS endpoint, and include it in the next pulse.
 
-### Deploy target folder
+### 6. Health check (optional)
 
-Use the app under a subpath such as:
+```bash
+curl -sS http://localhost:8090/health
+```
 
-- `/inngest`
+---
 
-Recommended remote app dir:
+## What gets pulsed
 
-- `public_html/<your-domain>/inngest`
+| Service | Endpoint |
+| --- | --- |
+| GitHub API | `https://api.github.com/rate_limit` |
+| GitHub Status | `https://www.githubstatus.com/api/v2/status.json` |
+| Tavus Status | `https://status.tavus.io/api/v2/status.json` |
+| Nango Status | `https://status.nango.dev/index.json` |
+| Resend Status | `https://resend-status.com/api/v1/summary` |
+| PostHog Status | `https://www.posthogstatus.com/api/status` |
+| Supabase Status | `https://status.supabase.com/api/v2/status.json` |
+| Webhook URL | Your URL (optional, off by default) |
 
-### GitHub Secrets
+Status-page checks parse the vendor JSON (not only HTTP 200), so a reported outage can show as **degraded** / **down**.
 
-- `DEPLOY_SSH_HOST`
-- `DEPLOY_SSH_USERNAME`
-- `DEPLOY_SSH_PRIVATE_KEY`
-- `DEPLOY_SSH_PORT`
-- `DEPLOY_REMOTE_APP_DIR` (example: `public_html/<your-domain>/inngest`)
+---
 
-### Node app settings (cPanel)
+## Production-like local run
 
-- **Node version:** `20.x`
-- **Application root:** `/home/<cpanel-user>/public_html/<your-domain>/inngest`
-- **Application URL:** `<your-domain>/inngest`
+```bash
+npm run build
+npm start
+```
+
+**`npm start`** runs `node dist/server.js` and does **not** load `.env` by itself — export vars in the shell or your host’s process manager.
+
+---
+
+## Environment variables
+
+See **[`.env.example`](.env.example)**.
+
+| Variable | Purpose |
+| --- | --- |
+| `PORT` | Listen port; default `8090`. |
+| `BASE_PATH` | Mount prefix; default `/inngest` (also served at `/` for local use). |
+| `INNGEST_EVENT_KEY` | Optional; send pulse events to Inngest Cloud. |
+| `INNGEST_SIGNING_KEY` | Optional; verify Inngest function invocations. |
+
+---
+
+## Deploy workflow (optional)
+
+[`.github/workflows/deploy-ssh.yml`](.github/workflows/deploy-ssh.yml) is **optional**. It is wired for SSH/cPanel deploy (GitHub Secrets + remote extract + `tmp/restart.txt`).
+
+If you clone this repo:
+
+- You **do not need** that workflow to run the app locally.
+- Leave it unused, delete it, or replace it with your own hosting.
+
+### Typical cPanel shape
+
+- **Node:** `20.x`
 - **Startup file:** `dist/server.js`
-- **Restart trigger:** `tmp/restart.txt` (handled by CI)
-- **CloudLinux note:** keep `node_modules` as Node Selector symlink (CI does not upload it).
+- **App URL / `BASE_PATH`:** `/inngest`
+- **Secrets:** `DEPLOY_SSH_HOST`, `DEPLOY_SSH_USERNAME`, `DEPLOY_SSH_PRIVATE_KEY`, `DEPLOY_SSH_PORT`, `DEPLOY_REMOTE_APP_DIR`
 
-### App environment variables
+---
 
-- `INNGEST_EVENT_KEY`
-- `INNGEST_SIGNING_KEY`
-- `BASE_PATH` (set `/inngest` for subpath deployments)
-- `PORT` (optional; cPanel/Passenger usually injects it)
+## Commit style
 
-### Verify after deploy
+`JuanSoulTrek Inngest Service Pulse | short imperative summary`
 
-- `https://<your-domain>/inngest/`
-- `https://<your-domain>/inngest/health`
-- `https://<your-domain>/inngest/api/inngest`
+---
+
+## License
+
+ISC

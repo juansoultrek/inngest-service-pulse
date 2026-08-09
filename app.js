@@ -77,16 +77,16 @@ function renderCards() {
 
     const eventBadge = document.createElement("span");
     const eventClasses = {
-      webhook: "event-e5",
-      "github-api": "event-e1",
-      "github-status": "event-e2",
-      "tavus-status": "event-e3",
-      "nango-status": "event-e4",
-      "resend-status": "event-e1",
-      "posthog-status": "event-e2",
-      "supabase-status": "event-e3",
+      webhook: "event-webhook",
+      "github-api": "event-github",
+      "github-status": "event-github",
+      "tavus-status": "event-tavus",
+      "nango-status": "event-nango",
+      "resend-status": "event-resend",
+      "posthog-status": "event-posthog",
+      "supabase-status": "event-supabase",
     };
-    const eventClass = eventClasses[service.key] || "event-e4";
+    const eventClass = eventClasses[service.key] || "event-github";
     eventBadge.className = `event-id ${eventClass}`;
     eventBadge.textContent = service.isWebhook
       ? "WEBHOOK_URL"
