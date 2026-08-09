@@ -1,0 +1,22 @@
+src/store.ts
+  s_4bfe2eeea15cf9::t_b830acebcad919 15,25,35,45,55,65
+styles.css
+  s_4bfe2eeea15cf9::t_179bbddb7c3a4d 149-151
+  s_4bfe2eeea15cf9::t_caf51fcf6105ea 273
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c2dd95e25f4b9bb7319b5cfe507e5963f1ecca58",
+  "prompts": {},
+  "sessions": {
+    "s_4bfe2eeea15cf9": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "0b52417d-e406-4389-ad6b-992e7e5cea09",
+        "model": "grok-4.5"
+      },
+      "human_author": "Juan <juan.villegas@formstack.com>"
+    }
+  }
+}
