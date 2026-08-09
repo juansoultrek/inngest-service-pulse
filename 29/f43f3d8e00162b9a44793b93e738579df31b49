@@ -1,0 +1,43 @@
+README.md
+  s_5e035641087fd6::t_7e050a03042fcb 103,105,107,109-110,112,114,116-117
+  s_2bddd97db3a396::t_eb4227d4664f8d 3,5,7,9-34,40-60,62,64-73,75,77,79,81-88,90,92,94-99,101,111,113,119-121,123,125,127,129
+  s_5e035641087fd6::t_758f54ca1cfa5d 118
+styles.css
+  s_4bfe2eeea15cf9::t_494f968270b5c6 147-151,154-157,160-163,166-169,172-181,185-187
+  s_4bfe2eeea15cf9::t_d3b0eb6f978d42 8
+  s_4bfe2eeea15cf9::t_9163034996a25e 272-274,277-278,281-282,285-286,289-290,293-294,297-299
+app.js
+  s_4bfe2eeea15cf9::t_9e4563428d28a6 80-87,89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "29f43f3d8e00162b9a44793b93e738579df31b49",
+  "prompts": {},
+  "sessions": {
+    "s_2bddd97db3a396": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "a0934af5-d428-40fe-b96c-69ea1c5c5d34",
+        "model": "grok-4.5"
+      },
+      "human_author": "Juan <juan.villegas@formstack.com>"
+    },
+    "s_4bfe2eeea15cf9": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "0b52417d-e406-4389-ad6b-992e7e5cea09",
+        "model": "grok-4.5"
+      },
+      "human_author": "Juan <juan.villegas@formstack.com>"
+    },
+    "s_5e035641087fd6": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "6942e861-f911-495d-b0b6-5b51e587a68f",
+        "model": "grok-4.5"
+      },
+      "human_author": "Juan <juan.villegas@formstack.com>"
+    }
+  }
+}
