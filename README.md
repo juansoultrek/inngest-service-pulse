@@ -101,12 +101,7 @@ See **[`.env.example`](.env.example)**.
 
 ## Deploy workflow (optional)
 
-[`.github/workflows/deploy-ssh.yml`](.github/workflows/deploy-ssh.yml) is **optional**. It is wired for SSH/cPanel deploy (GitHub Secrets + remote extract + `tmp/restart.txt`).
-
-If you clone this repo:
-
-- You **do not need** that workflow to run the app locally.
-- Leave it unused, delete it, or replace it with your own hosting.
+> **Author deploy only.** [`.github/workflows/deploy-ssh.yml`](.github/workflows/deploy-ssh.yml) is wired for the author’s SSH/cPanel host (GitHub Secrets + remote extract + `tmp/restart.txt`). If you clone this repo to run it locally, **ignore or delete** `.github/workflows/` — you do not need it. Without the author’s secrets, Actions will **not** deploy to their server.
 
 ### Typical cPanel shape
 
