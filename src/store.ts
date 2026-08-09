@@ -18,6 +18,7 @@ export const serviceDefaults: ServiceConfig[] = [
     type: "api",
     endpoint: "https://api.github.com/rate_limit",
     enabled: true,
+    statusProvider: "http",
   },
   {
     key: "github-status",
@@ -27,24 +28,57 @@ export const serviceDefaults: ServiceConfig[] = [
     type: "api",
     endpoint: "https://www.githubstatus.com/api/v2/status.json",
     enabled: true,
+    statusProvider: "statuspage",
   },
   {
-    key: "npm-ping",
+    key: "tavus-status",
     serviceId: 3,
-    label: "NPM_PIN",
-    name: "NPM PIN",
+    label: "TAVUS_STATUS",
+    name: "Tavus Status",
     type: "api",
-    endpoint: "https://registry.npmjs.org/-/ping",
+    endpoint: "https://status.tavus.io/api/v2/status.json",
     enabled: true,
+    statusProvider: "statuspage",
   },
   {
-    key: "jsonplaceholder",
+    key: "nango-status",
     serviceId: 4,
-    label: "JSON_PLACE_HOLDER",
-    name: "JSON place holder",
+    label: "NANGO_STATUS",
+    name: "Nango Status",
     type: "api",
-    endpoint: "https://jsonplaceholder.typicode.com/posts/1",
+    endpoint: "https://status.nango.dev/index.json",
     enabled: true,
+    statusProvider: "betterstack",
+  },
+  {
+    key: "resend-status",
+    serviceId: 5,
+    label: "RESEND_STATUS",
+    name: "Resend Status",
+    type: "api",
+    endpoint: "https://resend-status.com/api/v1/summary",
+    enabled: true,
+    statusProvider: "incident_io_summary",
+  },
+  {
+    key: "posthog-status",
+    serviceId: 6,
+    label: "POSTHOG_STATUS",
+    name: "PostHog Status",
+    type: "api",
+    endpoint: "https://www.posthogstatus.com/api/status",
+    enabled: true,
+    statusProvider: "posthog_status",
+  },
+  {
+    key: "supabase-status",
+    serviceId: 7,
+    label: "SUPABASE_STATUS",
+    name: "Supabase Status",
+    type: "api",
+    endpoint: "https://status.supabase.com/api/v2/status.json",
+    enabled: true,
+    statusProvider: "statuspage",
   },
 ];
 
@@ -58,4 +92,3 @@ export function addResult(result: PulseResult) {
 export function listResults() {
   return results;
 }
-

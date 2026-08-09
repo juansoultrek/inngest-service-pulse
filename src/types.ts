@@ -2,10 +2,21 @@ export type ServiceKey =
   | "webhook"
   | "github-api"
   | "github-status"
-  | "npm-ping"
-  | "jsonplaceholder";
+  | "tavus-status"
+  | "nango-status"
+  | "resend-status"
+  | "posthog-status"
+  | "supabase-status";
 
 export type ServiceType = "api" | "webhook_url";
+
+/** How to interpret the response body for health. */
+export type StatusProvider =
+  | "http"
+  | "statuspage"
+  | "betterstack"
+  | "incident_io_summary"
+  | "posthog_status";
 
 export type ServiceConfig = {
   key: ServiceKey;
@@ -16,6 +27,7 @@ export type ServiceConfig = {
   endpoint: string;
   enabled: boolean;
   isWebhook?: boolean;
+  statusProvider?: StatusProvider;
 };
 
 export type PulseResultStatus = "healthy" | "degraded" | "down";
@@ -31,4 +43,3 @@ export type PulseResult = {
   checkedAt: string;
   error?: string;
 };
-

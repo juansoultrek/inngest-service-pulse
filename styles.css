@@ -276,8 +276,11 @@ body {
   border-left-color: #a78bfa;
 }
 
-.entry-npm-ping,
-.entry-jsonplaceholder,
+.entry-tavus-status,
+.entry-nango-status,
+.entry-resend-status,
+.entry-posthog-status,
+.entry-supabase-status,
 .entry-custom-url {
   border-left-color: #f472b6;
 }

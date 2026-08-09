@@ -76,16 +76,17 @@ function renderCards() {
     card.appendChild(heading);
 
     const eventBadge = document.createElement("span");
-    const eventClass =
-      service.key === "webhook"
-        ? "event-e5"
-        : service.key === "github-api"
-          ? "event-e1"
-          : service.key === "github-status"
-            ? "event-e2"
-            : service.key === "npm-ping"
-              ? "event-e3"
-              : "event-e4";
+    const eventClasses = {
+      webhook: "event-e5",
+      "github-api": "event-e1",
+      "github-status": "event-e2",
+      "tavus-status": "event-e3",
+      "nango-status": "event-e4",
+      "resend-status": "event-e1",
+      "posthog-status": "event-e2",
+      "supabase-status": "event-e3",
+    };
+    const eventClass = eventClasses[service.key] || "event-e4";
     eventBadge.className = `event-id ${eventClass}`;
     eventBadge.textContent = service.isWebhook
       ? "WEBHOOK_URL"
@@ -176,9 +177,27 @@ function applyResult(result) {
   serviceState.failures = result.status === "healthy" ? 0 : serviceState.failures + 1;
 }
 
+function ensureServiceState() {
+  const knownKeys = new Set(services.map((service) => service.key));
+  for (const key of [...state.keys()]) {
+    if (!knownKeys.has(key)) state.delete(key);
+  }
+  services.forEach((service) => {
+    if (state.has(service.key)) return;
+    state.set(service.key, {
+      status: "degraded",
+      latencyMs: 0,
+      failures: 0,
+      lastCheck: "",
+      enabled: Boolean(service.enabled),
+      endpoint: service.endpoint || "",
+    });
+  });
+}
+
 async function refreshResults() {
   const payload = await apiJson("./api/pulse/results");
-  const results = payload.results || [];
+  const results = (payload.results || []).filter((result) => state.has(result.key));
 
   results.forEach((result) => applyResult(result));
   renderCards();
@@ -200,6 +219,11 @@ async function refreshResults() {
 
 async function pulseAll() {
   setWebhookNote();
+
+  // Always re-fetch the catalog so a stale tab cannot re-pulse removed demos.
+  await loadServices();
+  ensureServiceState();
+  renderCards();
 
   const payloadServices = services.map((service) => {
     const serviceState = state.get(service.key);
@@ -270,16 +294,7 @@ async function init() {
     return;
   }
 
-  services.forEach((service) => {
-    state.set(service.key, {
-      status: "degraded",
-      latencyMs: 0,
-      failures: 0,
-      lastCheck: "",
-      enabled: Boolean(service.enabled),
-      endpoint: service.endpoint || "",
-    });
-  });
+  ensureServiceState();
   renderCards();
   pulseAllButton.addEventListener("click", () => {
     pulseAll().catch((error) => {

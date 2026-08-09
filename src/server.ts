@@ -1,11 +1,13 @@
 import express from "express";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { serve } from "inngest/express";
 import { inngest } from "./inngestClient.js";
 import { pulseAllRequested, pulseServiceRequested } from "./inngestFunctions.js";
-import { listResults, serviceDefaults } from "./store.js";
+import { addResult, listResults, serviceDefaults } from "./store.js";
 import { ServiceConfig } from "./types.js";
+import { checkService } from "./pulseCheck.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,11 +18,12 @@ const port = Number(process.env.PORT ?? 8090);
 const basePathRaw = process.env.BASE_PATH ?? "/inngest";
 const basePath =
   basePathRaw === "/" ? "" : `/${basePathRaw.replace(/^\/+|\/+$/g, "")}`;
+const baseHref = basePath ? `${basePath}/` : "/";
 
 app.use(express.json());
-app.use(express.static(rootDir));
 
 const router = express.Router();
+router.use(express.static(rootDir));
 
 router.get("/health", (_req, res) => {
   res.json({
@@ -41,16 +44,41 @@ router.get("/api/pulse/results", (_req, res) => {
 
 router.post("/api/pulse/all", async (req, res) => {
   const provided = req.body?.services as ServiceConfig[] | undefined;
-  const services = (provided?.length ? provided : serviceDefaults)
+  const allowedKeys = new Set(serviceDefaults.map((service) => service.key));
+  const fromClient = (provided ?? []).filter((service) => allowedKeys.has(service.key));
+  const services = (fromClient.length ? fromClient : serviceDefaults)
     .filter((service) => service.enabled)
     .filter((service) => !service.isWebhook || Boolean(service.endpoint));
 
-  await inngest.send({
-    name: "pulse/all.requested",
-    data: { services, requestedAt: new Date().toISOString() },
+  const checks = await Promise.all(services.map((service) => checkService(service)));
+  const checkedAt = new Date().toISOString();
+
+  checks.forEach((checked) => {
+    const checkedError = "error" in checked ? checked.error : undefined;
+    addResult({
+      key: checked.service.key,
+      serviceId: checked.service.serviceId,
+      label: checked.service.label,
+      endpoint: checked.service.endpoint,
+      status: checked.status,
+      statusCode: checked.statusCode,
+      latencyMs: checked.latencyMs,
+      checkedAt,
+      error: checkedError,
+    });
   });
 
-  res.json({ ok: true, queued: services.length });
+  // Best effort event emission for Inngest observability, without blocking UI behavior.
+  try {
+    await inngest.send({
+      name: "pulse/all.requested",
+      data: { services, requestedAt: checkedAt },
+    });
+  } catch (_error) {
+    // noop: local and UI pulse should still work even if cloud/event key is not set.
+  }
+
+  res.json({ ok: true, queued: services.length, results: checks });
 });
 
 router.use(
@@ -62,7 +90,14 @@ router.use(
 );
 
 router.get("/", (_req, res) => {
-  res.sendFile(path.resolve(rootDir, "index.html"));
+  // Relative assets break on /inngest (no trailing slash) → /styles.css 404.
+  // <base> keeps CSS/JS/API under the mount whether the URL has a slash or not.
+  const indexPath = path.resolve(rootDir, "index.html");
+  let html = fs.readFileSync(indexPath, "utf8");
+  if (!html.includes("<base ")) {
+    html = html.replace(/<head>/i, `<head>\n    <base href="${baseHref}" />`);
+  }
+  res.type("html").send(html);
 });
 
 if (basePath) {

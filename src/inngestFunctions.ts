@@ -1,38 +1,7 @@
 import { inngest } from "./inngestClient.js";
 import { addResult } from "./store.js";
-import { PulseResultStatus, ServiceConfig } from "./types.js";
-
-function evaluateStatus(statusCode: number, latencyMs: number): PulseResultStatus {
-  if (statusCode >= 500 || latencyMs > 3000) return "down";
-  if (statusCode >= 400 || latencyMs > 1200) return "degraded";
-  return "healthy";
-}
-
-async function checkService(service: ServiceConfig) {
-  const startedAt = Date.now();
-  try {
-    const response = await fetch(service.endpoint, {
-      method: "GET",
-      headers: { "User-Agent": "inngest-service-pulse" },
-    });
-    const latencyMs = Date.now() - startedAt;
-    return {
-      service,
-      statusCode: response.status,
-      latencyMs,
-      status: evaluateStatus(response.status, latencyMs),
-    };
-  } catch (error) {
-    const latencyMs = Date.now() - startedAt;
-    return {
-      service,
-      statusCode: 0,
-      latencyMs,
-      status: "down" as const,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
-}
+import { ServiceConfig } from "./types.js";
+import { checkService } from "./pulseCheck.js";
 
 export const pulseAllRequested = inngest.createFunction(
   { id: "pulse-all-requested", triggers: [{ event: "pulse/all.requested" }] },
