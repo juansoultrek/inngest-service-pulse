@@ -1,5 +1,4 @@
 import express from "express";
-import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { serve } from "inngest/express";
@@ -18,7 +17,6 @@ const port = Number(process.env.PORT ?? 8090);
 const basePathRaw = process.env.BASE_PATH ?? "/inngest";
 const basePath =
   basePathRaw === "/" ? "" : `/${basePathRaw.replace(/^\/+|\/+$/g, "")}`;
-const baseHref = basePath ? `${basePath}/` : "/";
 
 app.use(express.json());
 
@@ -90,14 +88,7 @@ router.use(
 );
 
 router.get("/", (_req, res) => {
-  // Relative assets break on /inngest (no trailing slash) → /styles.css 404.
-  // <base> keeps CSS/JS/API under the mount whether the URL has a slash or not.
-  const indexPath = path.resolve(rootDir, "index.html");
-  let html = fs.readFileSync(indexPath, "utf8");
-  if (!html.includes("<base ")) {
-    html = html.replace(/<head>/i, `<head>\n    <base href="${baseHref}" />`);
-  }
-  res.type("html").send(html);
+  res.sendFile(path.resolve(rootDir, "index.html"));
 });
 
 if (basePath) {
