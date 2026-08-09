@@ -78,7 +78,6 @@ function renderCards() {
     const eventBadge = document.createElement("span");
     const eventClasses = {
       webhook: "event-webhook",
-      "github-api": "event-github",
       "github-status": "event-github",
       "tavus-status": "event-tavus",
       "nango-status": "event-nango",

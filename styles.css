@@ -146,9 +146,9 @@ body {
 
 /* Match juansoultrek.com playground company tag colors */
 .event-github {
-  border-color: rgba(148, 163, 184, 0.4);
-  color: #e2e8f0;
-  background: rgba(148, 163, 184, 0.14);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+  background: #000;
 }
 
 .event-tavus {
@@ -269,9 +269,8 @@ body {
   font-size: 0.85rem;
 }
 
-.entry-github-api,
 .entry-github-status {
-  border-left-color: #94a3b8;
+  border-left-color: #000;
 }
 
 .entry-tavus-status {

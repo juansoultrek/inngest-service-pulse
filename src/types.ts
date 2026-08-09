@@ -1,6 +1,5 @@
 export type ServiceKey =
   | "webhook"
-  | "github-api"
   | "github-status"
   | "tavus-status"
   | "nango-status"

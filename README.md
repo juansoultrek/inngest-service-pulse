@@ -63,7 +63,6 @@ curl -sS http://localhost:8090/health
 
 | Service | Endpoint |
 | --- | --- |
-| GitHub API | `https://api.github.com/rate_limit` |
 | GitHub Status | `https://www.githubstatus.com/api/v2/status.json` |
 | Tavus Status | `https://status.tavus.io/api/v2/status.json` |
 | Nango Status | `https://status.nango.dev/index.json` |

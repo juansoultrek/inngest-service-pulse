@@ -11,18 +11,8 @@ export const serviceDefaults: ServiceConfig[] = [
     enabled: false,
   },
   {
-    key: "github-api",
-    serviceId: 1,
-    label: "GITHUB_API",
-    name: "GitHub API",
-    type: "api",
-    endpoint: "https://api.github.com/rate_limit",
-    enabled: true,
-    statusProvider: "http",
-  },
-  {
     key: "github-status",
-    serviceId: 2,
+    serviceId: 1,
     label: "GITHUB_STATUS",
     name: "GitHub Status",
     type: "api",
@@ -32,7 +22,7 @@ export const serviceDefaults: ServiceConfig[] = [
   },
   {
     key: "tavus-status",
-    serviceId: 3,
+    serviceId: 2,
     label: "TAVUS_STATUS",
     name: "Tavus Status",
     type: "api",
@@ -42,7 +32,7 @@ export const serviceDefaults: ServiceConfig[] = [
   },
   {
     key: "nango-status",
-    serviceId: 4,
+    serviceId: 3,
     label: "NANGO_STATUS",
     name: "Nango Status",
     type: "api",
@@ -52,7 +42,7 @@ export const serviceDefaults: ServiceConfig[] = [
   },
   {
     key: "resend-status",
-    serviceId: 5,
+    serviceId: 4,
     label: "RESEND_STATUS",
     name: "Resend Status",
     type: "api",
@@ -62,7 +52,7 @@ export const serviceDefaults: ServiceConfig[] = [
   },
   {
     key: "posthog-status",
-    serviceId: 6,
+    serviceId: 5,
     label: "POSTHOG_STATUS",
     name: "PostHog Status",
     type: "api",
@@ -72,7 +62,7 @@ export const serviceDefaults: ServiceConfig[] = [
   },
   {
     key: "supabase-status",
-    serviceId: 7,
+    serviceId: 6,
     label: "SUPABASE_STATUS",
     name: "Supabase Status",
     type: "api",
